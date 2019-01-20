@@ -13,6 +13,9 @@ public class PointcloudRenderer : MonoBehaviour {
     public ControlRobot controlRobotScript;
     public Camera RootCamera;
 
+    //public GameObject Rover;
+    //private GameObject roverObj;
+
     private Vector3 cameraPos;
     private Vector3 newCameraPos;
     private Vector3 newCameraRot;
@@ -30,33 +33,28 @@ public class PointcloudRenderer : MonoBehaviour {
         mqttClient.MqttMsgPublishReceived += MqttClient_MqttMsgPublishReceived;
 
         mqttClient.Subscribe(new string[] { "pointcloud" }, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });
-        
+
+        //roverObj = Instantiate(Rover, Vector3.zero, Quaternion.identity);
     }
 
     private void Update()
     {
+        cameraPos = RootCamera.transform.position;
         if(newPC != oldPC)
         {
             RenderPoint(newPC);
             oldPC = newPC;
         }
-        RootCamera.transform.position = newCameraPos;
-        RootCamera.transform.rotation = Quaternion.Euler(newCameraRot);
+
+        //roverObj.transform.position = Vector3.Lerp(roverObj.transform.position, newCameraPos, 0.5f);
     }
 
     private void MqttClient_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
     {
-        Debug.LogError("Received message 1");
         var vertices = System.Text.Encoding.UTF8.GetString(e.Message).ToString().Split(',');
         newPC = new Vector3(float.Parse(vertices[0]),
             float.Parse(vertices[1]),
             float.Parse(vertices[2]));
-        newCameraPos = new Vector3(float.Parse(vertices[3]),
-            float.Parse(vertices[4]),
-            float.Parse(vertices[5]));
-        newCameraRot = new Vector3(float.Parse(vertices[6]),
-            float.Parse(vertices[7]),
-            float.Parse(vertices[8]));
     }
 
     private void RenderPoint(Vector3 renderPos)
