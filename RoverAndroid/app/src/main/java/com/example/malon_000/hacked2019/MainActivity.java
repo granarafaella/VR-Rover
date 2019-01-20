@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
                 Float y = Float.parseFloat(splited[1]);
 
 
-                if (x>0){
+                if (x>0.3){
                     if (serialPort!=null) {
                         serialPort.syncOpen();
                         serialPort.setBaudRate(115200);
@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
                         status_list_view.setAdapter(status_adapter);
 
                     }
-                }else if (x<0){
+                }else if (x<-0.3){
                     if (serialPort!=null) {
                         serialPort.syncOpen();
                         serialPort.setBaudRate(115200);
@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 }
-                if (y>0){
+                if (y>0.3){
                     if (serialPort!=null) {
                         serialPort.syncOpen();
                         serialPort.setBaudRate(115200);
@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
                         status_list_view.setAdapter(status_adapter);
 
                     }
-                }else if (y<0){
+                }else if (y<-0.3){
                     if (serialPort!=null) {
                         serialPort.syncOpen();
                         serialPort.setBaudRate(115200);
