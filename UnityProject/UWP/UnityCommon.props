@@ -1,0 +1,10 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <UnityWSASolutionName>UnityProject</UnityWSASolutionName>
+        <UnityWSASolutionDir>C:\Users\megal\dev\Hacked2019\UnityProject\UWP\</UnityWSASolutionDir>
+        <UnityProjectDir>C:\Users\megal\dev\Hacked2019\UnityProject\</UnityProjectDir>
+        <UnityWSAPlayerDir>C:\Program Files\Unity_2018_1_9_f1\Editor\Data\PlaybackEngines\MetroSupport\</UnityWSAPlayerDir>
+        <UnityWSAToolsDir>$(UnityWSASolutionDir)Unity\Tools\</UnityWSAToolsDir>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+</Project>

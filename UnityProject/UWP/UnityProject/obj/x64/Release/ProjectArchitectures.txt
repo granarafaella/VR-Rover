@@ -1,0 +1,2 @@
+C:\Users\megal\dev\Hacked2019\UnityProject\UWP\GeneratedProjects\UWP\Assembly-CSharp\Assembly-CSharp.csproj;x64
+C:\Users\megal\dev\Hacked2019\UnityProject\UWP\UnityProject\UnityProject.csproj;x64
