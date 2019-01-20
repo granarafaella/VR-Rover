@@ -52,6 +52,15 @@ namespace HoloToolkit.Unity.InputModule
         [SerializeField]
         protected UnityEngine.Material GLTFMaterial;
 
+        private Vector2 thumbstickPosition;
+        public Vector2 ThumbstickPosition
+        {
+            get
+            {
+                return thumbstickPosition;
+            }
+        }
+
 #if UNITY_WSA && UNITY_2017_2_OR_NEWER
         // This will be used to keep track of our controllers, indexed by their unique source ID.
         private Dictionary<string, MotionControllerInfo> controllerDictionary = new Dictionary<string, MotionControllerInfo>(0);
@@ -151,6 +160,7 @@ namespace HoloToolkit.Unity.InputModule
                         if (sourceState.source.supportsThumbstick)
                         {
                             currentController.AnimateThumbstick(sourceState.thumbstickPressed, sourceState.thumbstickPosition);
+                            thumbstickPosition = sourceState.thumbstickPosition;
                         }
 
                         if (sourceState.source.supportsTouchpad)

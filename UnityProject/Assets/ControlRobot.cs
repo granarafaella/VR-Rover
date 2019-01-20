@@ -3,73 +3,58 @@ using HoloToolkit.Unity.InputModule;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using UnityEngine;
 using UnityEngine.XR.WSA.Input;
+using uPLibrary.Networking.M2Mqtt;
+using uPLibrary.Networking.M2Mqtt.Messages;
 
 public class ControlRobot : MonoBehaviour {
 
-    [Tooltip("Name of the thumbstick axis to check for teleport and strafe.")]
-    public XboxControllerMappingTypes HorizontalStrafe = XboxControllerMappingTypes.XboxLeftStickHorizontal;
+    public MotionControllerVisualizer MotionControllerVisualizer;
 
-    [Tooltip("Name of the thumbstick axis to check for movement forwards and backwards.")]
-    public XboxControllerMappingTypes ForwardMovement = XboxControllerMappingTypes.XboxLeftStickVertical;
-
-    [Tooltip("Name of the thumbstick axis to check for rotation.")]
-    public XboxControllerMappingTypes HorizontalRotation = XboxControllerMappingTypes.XboxRightStickHorizontal;
-
-    [Tooltip("Name of the thumbstick axis to check for rotation.")]
-    public XboxControllerMappingTypes VerticalRotation = XboxControllerMappingTypes.XboxRightStickVertical;
-
-
-    const float MovementAmount = 0.5f;
-    const float RotationAmount = 45.0f;
+    private MqttClient client;
 
     // Use this for initialization
     void Start () {
-		
-	}
+        client = new MqttClient(IPAddress.Parse("127.0.0.1"), 1883, false, null);
+
+        client.MqttMsgPublishReceived += client_MqttMsgPublishReceived;
+
+        string clientId = Guid.NewGuid().ToString();
+        client.Connect(clientId);
+
+        client.Subscribe(new string[] { "telemetry/x" }, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });
+        client.Subscribe(new string[] { "telemetry/y" }, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });
+        
+    }
 	
 	// Update is called once per frame
 	void Update () {
-        if (InteractionManager.numSourceStates == 0)
-        {
-            HandleGamepad();
-        }
+        UpdateControllerState();
     }
 
     Dictionary<string, float> Telemetry = new Dictionary<string, float>(2);
 
-    private void HandleGamepad()
+    private void UpdateControllerState()
     {
-        float leftX = Input.GetAxis(XboxControllerMapping.GetMapping(HorizontalStrafe));
-        float leftY = Input.GetAxis(XboxControllerMapping.GetMapping(ForwardMovement));
 
-        float rightY = Input.GetAxis(XboxControllerMapping.GetMapping(VerticalRotation));
-        float rightX = Input.GetAxis(XboxControllerMapping.GetMapping(HorizontalRotation));
+        var thumbstickPosition = MotionControllerVisualizer.ThumbstickPosition;
+        Telemetry["x"] = thumbstickPosition.x;
+        Telemetry["y"] = thumbstickPosition.y;
 
-        if (leftY > 0.8 && Math.Abs(leftX) < 0.3)
-        {
-            Telemetry["forward"] = +MovementAmount;
-            Debug.Log(Telemetry["forward"]);
-        }
-        else if (leftY < -0.8 && Math.Abs(leftX) < 0.3)
-        {
-            Telemetry["forward"] = -MovementAmount;
-            Debug.Log(Telemetry["forward"]);
-        }
-
-        if (rightX < -0.8 && Math.Abs(rightY) < 0.3)
-        {
-            Telemetry["rotation"] = -RotationAmount;
-            Debug.Log(Telemetry["rotation"]);
-        }
-        else if (rightX > 0.8 && Math.Abs(rightY) < 0.3)
-        {
-            Telemetry["rotation"] = +RotationAmount;
-            Debug.Log(Telemetry["rotation"]);
-        }
-
+        Debug.LogError("Sending data");
+        SendData();
     }
 
+    void client_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
+    {
+        Debug.Log("Received: " + System.Text.Encoding.UTF8.GetString(e.Message));
+    }
 
+    void SendData()
+    {
+        client.Publish("telemetry/x", System.Text.Encoding.UTF8.GetBytes(Telemetry["x"].ToString()), MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, true);
+        client.Publish("telemetry/y", System.Text.Encoding.UTF8.GetBytes(Telemetry["y"].ToString()), MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, true);
+    }
 }
