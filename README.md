@@ -1,4 +1,4 @@
-# VR-Rover
+# RoVR The Explorer
 
 3rd Place Winner - HackED 2019 🥉
 
